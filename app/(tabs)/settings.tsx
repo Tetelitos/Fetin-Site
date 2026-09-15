@@ -565,7 +565,7 @@ export default function SettingsTab() {
         >
           <View style={{ flex: 1, paddingRight: 12 }}>
             <Text style={{ color: palette.text, fontWeight: "600" }}>
-              Notificações da rota
+              Notificações da mostra
             </Text>
             <Text style={{ color: palette.secondaryText, marginTop: 2 }}>
               Avisos de progresso e recompensas.
@@ -648,6 +648,26 @@ export default function SettingsTab() {
           </>
         ) : null}
       </View>
+
+      {isProjectOwner ? (
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => router.push("/admin")}
+          style={{
+            alignItems: "center",
+            backgroundColor: palette.card,
+            borderColor: palette.border,
+            borderRadius: 8,
+            borderWidth: 1,
+            marginBottom: 12,
+            padding: 14,
+          }}
+        >
+          <Text style={{ color: palette.text, fontWeight: "bold" }}>
+            Gerenciar usuários
+          </Text>
+        </TouchableOpacity>
+      ) : null}
 
       <TouchableOpacity
         onPress={handleLogout}
