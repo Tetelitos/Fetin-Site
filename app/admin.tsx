@@ -1,11 +1,13 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { PROJECT_OWNER_UID } from "@/src/constants/project";
+import { db } from "@/src/firebaseConfig";
 import { useAuthUser } from "@/src/hooks/useAuthUser";
 
 type AdminUser = {
@@ -56,16 +58,64 @@ export default function AdminScreen() {
 
     setLoading(true);
     setError("");
+    const currentAccount: AdminUser = {
+      uid: user.uid,
+      displayName: user.displayName?.trim() || user.email?.split("@")[0] || "Administrador",
+      email: user.email ?? "",
+      phoneNumber: user.phoneNumber ?? "",
+      createdAt: user.metadata.creationTime ?? "",
+      disabled: false,
+    };
+
     try {
-      const token = await user.getIdToken();
-      const response = await fetch("/api/admin-users", {
-        headers: { Authorization: `Bearer ${token}` },
+      const snapshot = await getDocs(collection(db, "users"));
+      const savedUsers: AdminUser[] = snapshot.docs.map((userDoc) => {
+        const data = userDoc.data();
+        return {
+          uid: userDoc.id,
+          displayName:
+            (typeof data.displayName === "string" && data.displayName.trim()) ||
+            (typeof data.email === "string" ? data.email.split("@")[0] : "Usuário"),
+          email: typeof data.email === "string" ? data.email : "",
+          phoneNumber: typeof data.phoneNumber === "string" ? data.phoneNumber : "",
+          createdAt: "",
+          disabled: false,
+        };
       });
-      const data = (await response.json()) as { users?: AdminUser[]; error?: string };
-      if (!response.ok) throw new Error(data.error || "Não foi possível carregar os usuários.");
-      setUsers(data.users ?? []);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Não foi possível carregar os usuários.");
+      const currentSaved = savedUsers.find((item) => item.uid === user.uid);
+      const combined = currentSaved
+        ? savedUsers.map((item) =>
+            item.uid === user.uid
+              ? {
+                  ...item,
+                  displayName: user.displayName?.trim() || item.displayName,
+                  email: user.email || item.email,
+                }
+              : item
+          )
+        : [currentAccount, ...savedUsers];
+
+      setUsers(combined.sort((a, b) => a.displayName.localeCompare(b.displayName, "pt-BR")));
+    } catch {
+      try {
+        const ownProfile = await getDoc(doc(db, "users", user.uid));
+        const data = ownProfile.data();
+        setUsers([
+          {
+            ...currentAccount,
+            displayName:
+              user.displayName?.trim() ||
+              (typeof data?.displayName === "string" ? data.displayName : currentAccount.displayName),
+            phoneNumber:
+              typeof data?.phoneNumber === "string" ? data.phoneNumber : currentAccount.phoneNumber,
+          },
+        ]);
+      } catch {
+        setUsers([currentAccount]);
+      }
+      setError(
+        "Sua conta foi encontrada. Para listar as outras contas, publique as regras atualizadas do Firestore."
+      );
     } finally {
       setLoading(false);
     }
@@ -94,6 +144,9 @@ export default function AdminScreen() {
         },
         body: JSON.stringify({ uid: account.uid }),
       });
+      if (!response.headers.get("content-type")?.includes("application/json")) {
+        throw new Error("A exclusão de contas deve ser testada pelo site publicado no Vercel.");
+      }
       const data = (await response.json()) as { error?: string };
       if (!response.ok) throw new Error(data.error || "Não foi possível apagar a conta.");
       setUsers((current) => current.filter((item) => item.uid !== account.uid));

@@ -2,7 +2,7 @@ import { cert, getApp, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, type DocumentReference } from "firebase-admin/firestore";
 
-const PROJECT_OWNER_UID = "AyqcaBcvGKdm0sVWonLVPv4MAjP2";
+const PROJECT_OWNER_UID = "GRaKlfYQtLS2AcUT5wuCR5kCoXV2";
 
 type AdminUserResponse = {
   uid: string;

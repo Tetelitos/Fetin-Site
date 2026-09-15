@@ -14,7 +14,7 @@ service cloud.firestore {
     // para a limpeza controlada de históricos, sem permissão para fabricar XP.
     function isProjectOwner() {
       return signedIn() &&
-        request.auth.uid == 'AyqcaBcvGKdm0sVWonLVPv4MAjP2';
+        request.auth.uid == 'GRaKlfYQtLS2AcUT5wuCR5kCoXV2';
     }
 
     function isNonEmptyString(value, maxSize) {

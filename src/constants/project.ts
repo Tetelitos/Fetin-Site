@@ -1,4 +1,4 @@
-export const PROJECT_OWNER_UID = "AyqcaBcvGKdm0sVWonLVPv4MAjP2";
+export const PROJECT_OWNER_UID = "GRaKlfYQtLS2AcUT5wuCR5kCoXV2";
 
 // QR universal exclusivo para testes. Não use como credencial de produção:
 // aplicativos cliente podem ter seus valores internos inspecionados.
