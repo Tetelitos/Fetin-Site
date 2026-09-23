@@ -79,6 +79,7 @@ export default function EventScreen() {
   const [scannerTeam, setScannerTeam] = useState<EventTeam | null>(null);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerActive, setScannerActive] = useState(true);
+  const [scannerError, setScannerError] = useState("");
   const [teams, setTeams] = useState<EventTeam[]>([]);
   const [visits, setVisits] = useState<EventVisit[]>([]);
   const [ranking, setRanking] = useState<EventRankingItem[]>([]);
@@ -165,6 +166,7 @@ export default function EventScreen() {
       setScannerTeam(team);
       setSelectedTeam(null);
       scanInProgressRef.current = false;
+      setScannerError("");
       setScannerActive(true);
       setScannerOpen(true);
     },
@@ -177,7 +179,7 @@ export default function EventScreen() {
 
       scanInProgressRef.current = true;
       setScannerActive(false);
-      setScannerOpen(false);
+      setScannerError("");
 
       const token = rawToken.trim();
       const identifiedTeam = teams.find((team) =>
@@ -185,11 +187,10 @@ export default function EventScreen() {
       );
 
       if (!identifiedTeam || (scannerTeam && scannerTeam.id !== identifiedTeam.id)) {
-        Alert.alert(
-          "QR Code inválido",
+        setScannerError(
           scannerTeam
-            ? "O código lido não pertence à equipe selecionada."
-            : "O código não pertence a uma equipe ativa da mostra."
+            ? "QR Code inválido: o código não pertence à equipe selecionada."
+            : "QR Code inválido: o código não pertence a uma equipe ativa."
         );
         scanInProgressRef.current = false;
         return;
@@ -197,6 +198,8 @@ export default function EventScreen() {
 
       try {
         const result = await registrarVisitaEvento(user, identifiedTeam, token);
+        setScannerOpen(false);
+        setScannerError("");
         setSelectedTeam(identifiedTeam);
 
         if (result.alreadyVisited) {
@@ -212,9 +215,8 @@ export default function EventScreen() {
           error instanceof EventServiceError && error.code === "event/mock-team"
             ? "Equipe de demonstração"
             : "Erro ao registrar visita";
-        Alert.alert(
-          title,
-          getErrorMessage(error, "Não foi possível registrar esta visita.")
+        setScannerError(
+          `${title}: ${getErrorMessage(error, "Não foi possível registrar esta visita.")}`
         );
       } finally {
         scanInProgressRef.current = false;
@@ -464,6 +466,7 @@ export default function EventScreen() {
 
       <QrScannerModal
         cameraPermission={cameraPermission}
+        errorMessage={scannerError}
         instruction={
           scannerTeam
             ? `Escaneie o QR Code da ${scannerTeam.nome}, mesa ${scannerTeam.mesa}.`
@@ -472,10 +475,16 @@ export default function EventScreen() {
         onClose={() => {
           setScannerOpen(false);
           setScannerActive(false);
+          setScannerError("");
           scanInProgressRef.current = false;
         }}
         onQrCodeRead={validateEventQrCode}
         onRequestPermission={requestCameraPermission}
+        onTryAgain={() => {
+          setScannerError("");
+          scanInProgressRef.current = false;
+          setScannerActive(true);
+        }}
         scannerAtivo={scannerActive}
         visible={scannerOpen}
       />

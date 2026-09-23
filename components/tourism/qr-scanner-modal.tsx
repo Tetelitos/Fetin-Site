@@ -12,7 +12,9 @@ type QrScannerModalProps = {
   onRequestPermission: () => Promise<unknown>;
   onQrCodeRead: (data: string) => void;
   onClose: () => void;
+  onTryAgain?: () => void;
   instruction?: string;
+  errorMessage?: string;
 };
 
 export function QrScannerModal({
@@ -22,7 +24,9 @@ export function QrScannerModal({
   onRequestPermission,
   onQrCodeRead,
   onClose,
+  onTryAgain,
   instruction = "Escaneie o QR Code do local selecionado.",
+  errorMessage,
 }: QrScannerModalProps) {
   return (
     <Modal visible={visible} animationType="slide">
@@ -93,6 +97,37 @@ export function QrScannerModal({
             borderRadius: 16,
           }}
         >
+          {errorMessage ? (
+            <View
+              style={{
+                backgroundColor: "#471b24",
+                borderColor: "#ff8a98",
+                borderRadius: 12,
+                borderWidth: 1,
+                marginBottom: 12,
+                padding: 12,
+              }}
+            >
+              <Text style={{ color: "#ffd9de", fontWeight: "800", textAlign: "center" }}>
+                {errorMessage}
+              </Text>
+              {onTryAgain ? (
+                <TouchableOpacity
+                  onPress={onTryAgain}
+                  style={{
+                    alignItems: "center",
+                    backgroundColor: "#7046ee",
+                    borderRadius: 10,
+                    marginTop: 11,
+                    padding: 11,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "900" }}>Tentar novamente</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          ) : null}
+
           <Text style={{ color: "white", textAlign: "center", marginBottom: 12 }}>
             {instruction}
           </Text>
