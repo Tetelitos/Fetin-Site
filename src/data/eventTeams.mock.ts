@@ -14,7 +14,7 @@ export const EVENT_TEAM_MOCKS: EventTeam[] = [
     andar: null,
     mesa: "2",
     x: 42,
-    y: 40,
+    y: 48,
     qrPrefix: "MOSTRA2026_EQ002",
     ativo: true,
     isMock: true,
