@@ -20,7 +20,6 @@ import { auth, db } from "@/src/firebaseConfig";
 import { useAuthUser } from "@/src/hooks/useAuthUser";
 import { sincronizarPerfilRankingEvento } from "@/src/services/eventService";
 import { sincronizarPerfilRanking } from "@/src/services/rankingService";
-import { limparHistoricoUsuario } from "@/src/services/tourismService";
 
 const themeOptions: { label: string; mode: ThemeMode }[] = [
   { label: "Claro", mode: "light" },
@@ -83,7 +82,6 @@ export default function SettingsTab() {
   const { user, loading } = useAuthUser();
   const [notificacoes, setNotificacoes] = useState(true);
   const [validacaoRapida, setValidacaoRapida] = useState(true);
-  const [historicoLimpando, setHistoricoLimpando] = useState(false);
   const [nomeSalvando, setNomeSalvando] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
@@ -192,43 +190,6 @@ export default function SettingsTab() {
         error instanceof Error ? error.message : "Não foi possível encerrar a sessão."
       );
     }
-  };
-
-  const limparHistorico = async () => {
-    if (!user) return;
-
-    setHistoricoLimpando(true);
-
-    try {
-      await limparHistoricoUsuario(user.uid);
-      Alert.alert("Historico apagado", "Suas visitas e ranking foram zerados.");
-    } catch (error) {
-      Alert.alert(
-        "Erro ao apagar historico",
-        error instanceof Error ? error.message : "Nao foi possivel apagar seu historico."
-      );
-    } finally {
-      setHistoricoLimpando(false);
-    }
-  };
-
-  const handleClearHistory = () => {
-    if (!isProjectOwner) return;
-
-    Alert.alert(
-      "Apagar historico?",
-      "Isso remove suas visitas validadas, recompensas e sua pontuacao no ranking.",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Apagar",
-          style: "destructive",
-          onPress: () => {
-            void limparHistorico();
-          },
-        },
-      ]
-    );
   };
 
   if (loading || !user) {
@@ -516,44 +477,6 @@ export default function SettingsTab() {
           />
         </View>
 
-        {isProjectOwner ? (
-          <>
-            <View
-              style={{
-                height: 1,
-                backgroundColor: palette.separator,
-                marginVertical: 6,
-              }}
-            />
-
-            <View style={{ paddingVertical: 10 }}>
-              <Text style={{ color: palette.text, fontWeight: "600" }}>
-                Historico de visitas
-              </Text>
-              <Text style={{ color: palette.secondaryText, marginTop: 2 }}>
-                Remove suas visitas validadas e zera sua posicao no ranking.
-              </Text>
-
-              <TouchableOpacity
-                onPress={handleClearHistory}
-                activeOpacity={0.85}
-                disabled={historicoLimpando}
-                style={{
-                  alignItems: "center",
-                  backgroundColor: palette.danger,
-                  borderRadius: 8,
-                  marginTop: 12,
-                  opacity: historicoLimpando ? 0.7 : 1,
-                  padding: 12,
-                }}
-              >
-                <Text style={{ color: palette.dangerText, fontWeight: "bold" }}>
-                  {historicoLimpando ? "Apagando..." : "Apagar historico"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : null}
       </View>
 
       {isProjectOwner ? (

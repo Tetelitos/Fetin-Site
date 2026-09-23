@@ -279,17 +279,23 @@ export const observarValidacoesDetalhadas = (
   );
 
 export const limparHistoricoUsuario = async (userId: string) => {
-  const [visitsSnap, rewardsSnap, xpEventsSnap] = await Promise.all([
+  const [visitsSnap, rewardsSnap, xpEventsSnap, eventVisitsSnap, eventProofsSnap] =
+    await Promise.all([
     getDocs(query(collection(db, "visits"), where("userId", "==", userId))),
     getDocs(query(collection(db, "rewards"), where("userId", "==", userId))),
     getDocs(collection(db, "ranking", userId, "xpEvents")),
+    getDocs(query(collection(db, "eventVisits"), where("userId", "==", userId))),
+    getDocs(query(collection(db, "eventVisitProofs"), where("userId", "==", userId))),
   ]);
 
   await Promise.all([
     deleteDoc(doc(db, "ranking", userId)),
+    deleteDoc(doc(db, "eventRanking", userId)),
     ...visitsSnap.docs.map((visitDoc) => deleteDoc(visitDoc.ref)),
     ...rewardsSnap.docs.map((rewardDoc) => deleteDoc(rewardDoc.ref)),
     ...xpEventsSnap.docs.map((eventDoc) => deleteDoc(eventDoc.ref)),
+    ...eventVisitsSnap.docs.map((visitDoc) => deleteDoc(visitDoc.ref)),
+    ...eventProofsSnap.docs.map((proofDoc) => deleteDoc(proofDoc.ref)),
   ]);
 };
 

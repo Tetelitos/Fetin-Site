@@ -9,6 +9,7 @@ import { useAppTheme } from "@/hooks/use-app-theme";
 import { PROJECT_OWNER_UID } from "@/src/constants/project";
 import { db } from "@/src/firebaseConfig";
 import { useAuthUser } from "@/src/hooks/useAuthUser";
+import { limparHistoricoUsuario } from "@/src/services/tourismService";
 
 type AdminUser = {
   uid: string;
@@ -38,6 +39,8 @@ export default function AdminScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingUid, setDeletingUid] = useState<string | null>(null);
+  const [historyClearing, setHistoryClearing] = useState(false);
+  const [historyMessage, setHistoryMessage] = useState("");
   const dark = colorScheme === "dark";
   const colors = {
     background: dark ? "#070618" : "#f3f1ff",
@@ -189,6 +192,33 @@ export default function AdminScreen() {
     }
   };
 
+  const clearAdminHistory = async () => {
+    if (!user) return;
+    const confirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        "Apagar seu histórico de visitas e zerar sua pontuação nos rankings?"
+      );
+    if (!confirmed) return;
+
+    setHistoryClearing(true);
+    setHistoryMessage("");
+    setError("");
+
+    try {
+      await limparHistoricoUsuario(user.uid);
+      setHistoryMessage("Histórico apagado. Suas visitas e pontuações foram zeradas.");
+    } catch (historyError) {
+      setError(
+        historyError instanceof Error
+          ? historyError.message
+          : "Não foi possível apagar o histórico."
+      );
+    } finally {
+      setHistoryClearing(false);
+    }
+  };
+
   if (authLoading || !user || user.uid !== PROJECT_OWNER_UID) {
     return (
       <View style={{ alignItems: "center", backgroundColor: colors.background, flex: 1, justifyContent: "center" }}>
@@ -240,6 +270,48 @@ export default function AdminScreen() {
             }}
           >
             <MaterialIcons color={colors.text} name="refresh" size={23} />
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+            borderRadius: 16,
+            borderWidth: 1,
+            marginBottom: 18,
+            padding: 16,
+          }}
+        >
+          <Text style={{ color: colors.text, fontSize: 17, fontWeight: "900" }}>
+            Histórico do administrador
+          </Text>
+          <Text style={{ color: colors.secondary, lineHeight: 20, marginTop: 6 }}>
+            Remove suas visitas e zera sua pontuação nos rankings.
+          </Text>
+          {historyMessage ? (
+            <Text style={{ color: "#159363", fontWeight: "800", marginTop: 10 }}>
+              {historyMessage}
+            </Text>
+          ) : null}
+          <TouchableOpacity
+            activeOpacity={0.85}
+            disabled={historyClearing}
+            onPress={() => void clearAdminHistory()}
+            style={{
+              alignItems: "center",
+              backgroundColor: "#c73340",
+              borderRadius: 10,
+              marginTop: 14,
+              opacity: historyClearing ? 0.65 : 1,
+              padding: 13,
+            }}
+          >
+            {historyClearing ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={{ color: "white", fontWeight: "900" }}>Apagar histórico</Text>
+            )}
           </TouchableOpacity>
         </View>
 

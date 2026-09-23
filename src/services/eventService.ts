@@ -86,7 +86,7 @@ const normalizeTeam = (
     nome: toText(data.nome, "Equipe sem nome"),
     projeto: toText(data.projeto, "Projeto sem título"),
     descricao: toText(data.descricao, "Descrição ainda não informada."),
-    curso: toText(data.curso, "Curso não informado"),
+    curso: toText(data.curso),
     predio: building,
     andar: toFloor(building, data.andar),
     mesa: toText(data.mesa, "—"),
