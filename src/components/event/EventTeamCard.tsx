@@ -103,9 +103,11 @@ export function EventTeamCard({
             >
               {team.projeto}
             </Text>
-            <Text style={{ color: colors.secondary, fontWeight: "700", marginTop: 7 }}>
-              {team.curso}
-            </Text>
+            {team.curso.trim() ? (
+              <Text style={{ color: colors.secondary, fontWeight: "700", marginTop: 7 }}>
+                {team.curso}
+              </Text>
+            ) : null}
             <Text style={{ color: colors.secondary, marginTop: 10 }}>
               📍 {buildingNames[team.predio]}{floorLabel} • Mesa {team.mesa}
             </Text>
