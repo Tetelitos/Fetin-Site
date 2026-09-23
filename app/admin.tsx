@@ -67,6 +67,37 @@ export default function AdminScreen() {
       disabled: false,
     };
 
+    let adminApiError = "";
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch("/api/admin-users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const contentType = response.headers.get("content-type") ?? "";
+
+      if (!contentType.includes("application/json")) {
+        throw new Error("A função administrativa ainda não está disponível nesta publicação.");
+      }
+
+      const data = (await response.json()) as { users?: AdminUser[]; error?: string };
+      if (!response.ok) {
+        throw new Error(data.error || "Não foi possível consultar o Firebase Authentication.");
+      }
+      if (!Array.isArray(data.users)) {
+        throw new Error("A função administrativa retornou uma resposta inválida.");
+      }
+
+      setUsers(data.users);
+      setLoading(false);
+      return;
+    } catch (apiError) {
+      adminApiError =
+        apiError instanceof Error
+          ? apiError.message
+          : "Não foi possível consultar o Firebase Authentication.";
+    }
+
     try {
       const snapshot = await getDocs(collection(db, "users"));
       const savedUsers: AdminUser[] = snapshot.docs.map((userDoc) => {
@@ -114,7 +145,8 @@ export default function AdminScreen() {
         setUsers([currentAccount]);
       }
       setError(
-        "Sua conta foi encontrada. Para listar as outras contas, publique as regras atualizadas do Firestore."
+        `${adminApiError} Publique as regras atualizadas do Firestore para listar os perfis salvos. ` +
+          "Para incluir também contas antigas, configure FIREBASE_SERVICE_ACCOUNT_JSON no Vercel e publique novamente."
       );
     } finally {
       setLoading(false);
