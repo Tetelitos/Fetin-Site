@@ -443,7 +443,7 @@ export default function HomeScreen() {
 
       {!localSelecionado && !listaAberta ? (
         <TouchableOpacity
-          accessibilityLabel="Explorar a Mostra de Projetos"
+          accessibilityLabel="Explorar o Sapucaí Rotas - Fetin"
           activeOpacity={0.9}
           onPress={() => router.push("/feira")}
           style={{
@@ -460,7 +460,7 @@ export default function HomeScreen() {
           }}
         >
           <Text style={{ color: "#cdbfff", fontSize: 12, fontWeight: "900" }}>
-            🎓 MOSTRA DE PROJETOS
+            🎓 Sapucaí Rotas - Fetin
           </Text>
           <Text style={{ color: "white", fontSize: 12, lineHeight: 17, marginTop: 6 }}>
             Visite as equipes e dispute o ranking do dia.

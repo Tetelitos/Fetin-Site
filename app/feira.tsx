@@ -262,7 +262,7 @@ export default function EventScreen() {
             <Text
               style={{ color: colors.text, fontSize: 26, fontWeight: "900" }}
             >
-              Mostra de Projetos
+              Sapucaí Rotas - Fetin
             </Text>
           </View>
 
@@ -467,7 +467,7 @@ export default function EventScreen() {
         instruction={
           scannerTeam
             ? `Escaneie o QR Code da ${scannerTeam.nome}, mesa ${scannerTeam.mesa}.`
-            : "Escaneie o QR Code de uma equipe ativa da Mostra de Projetos."
+            : "Escaneie o QR Code de uma equipe ativa do Sapucaí Rotas - Fetin."
         }
         onClose={() => {
           setScannerOpen(false);

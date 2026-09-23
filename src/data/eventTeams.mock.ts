@@ -1,6 +1,6 @@
 import type { EventTeam } from "@/src/types/event";
 
-// Equipes fornecidas para a Mostra de Projetos.
+// Equipes fornecidas para o Sapucaí Rotas - Fetin.
 // Os números das mesas e as posições seguem as marcações das plantas recebidas.
 export const EVENT_TEAM_MOCKS: EventTeam[] = [
   {

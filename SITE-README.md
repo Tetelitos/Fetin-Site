@@ -16,7 +16,7 @@ Os arquivos finais estão em `dist`. Essa é a pasta que deve ser enviada para u
 
 Execute `npm run build:web`. O resultado atualizado será gravado em `dist`.
 
-No site, a página inicial de rotas turísticas foi substituída pela Mostra de Projetos. Permanecem disponíveis o login, o cadastro e as configurações. A aba inferior Ranking agora mostra a classificação da Mostra de Projetos.
+No site, a página inicial de rotas turísticas foi substituída pelo Sapucaí Rotas - Fetin. Permanecem disponíveis o login, o cadastro e as configurações. A aba inferior Ranking agora mostra a classificação do Sapucaí Rotas - Fetin.
 
 ## Publicar no Vercel
 

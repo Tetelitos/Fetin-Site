@@ -1,4 +1,4 @@
-# Mostra de Projetos
+# Sapucaí Rotas - Fetin
 
 ## Visão geral
 
@@ -119,7 +119,7 @@ As regras impedem pontos arbitrários, documentos duplicados e tokens inventados
 
 1. Entre no aplicativo com o usuário administrador e confirme que login, mapa e ranking do turismo continuam funcionando.
 2. Cadastre uma equipe ativa em `eventTeams` e o token correspondente em `eventQrTokens`.
-3. Abra **Mostra de Projetos**, escolha o prédio/andar e confirme o marcador na posição cadastrada.
+3. Abra **Sapucaí Rotas - Fetin**, escolha o prédio/andar e confirme o marcador na posição cadastrada.
 4. Toque no marcador e confirme os dados, o botão de fechar e o botão **Ler QR Code**.
 5. Leia o QR correto. Confirme o feedback de `+100 XP`, o marcador verde, o progresso e o ranking.
 6. Leia o mesmo QR novamente. Confirme que nenhum XP adicional foi concedido.

@@ -1,9 +1,6 @@
 import { useRouter } from "expo-router";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as ImagePicker from "expo-image-picker";
 import { reload, signOut, updateProfile } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { ref } from "firebase/storage";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,9 +16,8 @@ import {
 
 import { useAppTheme, type ThemeMode } from "@/hooks/use-app-theme";
 import { PROJECT_OWNER_UID } from "@/src/constants/project";
-import { auth, db, storage } from "@/src/firebaseConfig";
+import { auth, db } from "@/src/firebaseConfig";
 import { useAuthUser } from "@/src/hooks/useAuthUser";
-import { uploadProfilePhoto } from "@/src/services/profilePhotoUpload";
 import { sincronizarPerfilRankingEvento } from "@/src/services/eventService";
 import { sincronizarPerfilRanking } from "@/src/services/rankingService";
 import { limparHistoricoUsuario } from "@/src/services/tourismService";
@@ -89,7 +85,6 @@ export default function SettingsTab() {
   const [validacaoRapida, setValidacaoRapida] = useState(true);
   const [historicoLimpando, setHistoricoLimpando] = useState(false);
   const [nomeSalvando, setNomeSalvando] = useState(false);
-  const [fotoSalvando, setFotoSalvando] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
   const palette = colors[colorScheme];
@@ -184,76 +179,6 @@ export default function SettingsTab() {
       );
     } finally {
       setNomeSalvando(false);
-    }
-  };
-
-  const handlePickProfilePhoto = async () => {
-    if (!user) return;
-
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permission.granted) {
-      Alert.alert(
-        "Permissão necessária",
-        "Permita o acesso à galeria para escolher uma foto de perfil."
-      );
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      mediaTypes: ["images"],
-      quality: 0.85,
-    });
-
-    if (!result.canceled) {
-      const asset = result.assets[0];
-      const previousPhotoUri = profilePhotoUri;
-      setProfilePhotoUri(asset.uri);
-      setFotoSalvando(true);
-
-      try {
-        const optimizedImage = await ImageManipulator.manipulateAsync(
-          asset.uri,
-          [{ resize: { width: 360 } }],
-          {
-            compress: 0.55,
-            format: ImageManipulator.SaveFormat.JPEG,
-          }
-        );
-
-        const photoRef = ref(storage, `profile-photos/${user.uid}/avatar.jpg`);
-        const downloadURL = await uploadProfilePhoto({
-          fileUri: optimizedImage.uri,
-          photoRef,
-          user,
-        });
-        const cacheSeparator = downloadURL.includes("?") ? "&" : "?";
-        const photoURL = `${downloadURL}${cacheSeparator}v=${Date.now()}`;
-
-        await updateProfile(user, { photoURL });
-        await setDoc(
-          doc(db, "users", user.uid),
-          { photoURL, updatedAt: serverTimestamp() },
-          { merge: true }
-        );
-        await Promise.allSettled([
-          sincronizarPerfilRanking(user),
-          sincronizarPerfilRankingEvento(user),
-        ]);
-
-        setProfilePhotoUri(photoURL);
-        Alert.alert("Foto atualizada", "Sua foto foi salva no perfil.");
-      } catch (error) {
-        setProfilePhotoUri(previousPhotoUri);
-        Alert.alert(
-          "Erro ao salvar foto",
-          error instanceof Error ? error.message : "Nao foi possivel salvar sua foto."
-        );
-      } finally {
-        setFotoSalvando(false);
-      }
     }
   };
 
@@ -399,24 +324,6 @@ export default function SettingsTab() {
           </Text>
           <Text style={{ color: palette.secondaryText, marginTop: 4 }}>{user.email}</Text>
 
-          <TouchableOpacity
-            onPress={handlePickProfilePhoto}
-            activeOpacity={0.85}
-            disabled={fotoSalvando}
-            style={{
-              borderColor: palette.border,
-              borderRadius: 8,
-              borderWidth: 1,
-              marginTop: 14,
-              opacity: fotoSalvando ? 0.7 : 1,
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-            }}
-          >
-            <Text style={{ color: palette.text, fontWeight: "700" }}>
-              {fotoSalvando ? "Salvando foto..." : "Alterar foto"}
-            </Text>
-          </TouchableOpacity>
         </View>
 
         <View style={{ paddingVertical: 10 }}>

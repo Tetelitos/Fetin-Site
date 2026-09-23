@@ -107,7 +107,7 @@ export default function Register() {
           Criar conta
         </Text>
         <Text style={{ color: "#665f80", marginBottom: 20 }}>
-          Cadastre seus dados para participar da Mostra de Projetos.
+          Cadastre seus dados para participar do Sapucaí Rotas - Fetin.
         </Text>
 
         <TextInput

@@ -58,7 +58,7 @@ export default function Login() {
           Entrar
         </Text>
         <Text style={{ color: "#665f80", marginBottom: 20 }}>
-          Acesse sua conta para continuar na Mostra de Projetos.
+          Acesse sua conta para continuar no Sapucaí Rotas - Fetin.
         </Text>
 
         <TextInput

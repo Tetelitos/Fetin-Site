@@ -1,4 +1,4 @@
-import { Image, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 
 import { EventMarker } from "@/src/components/event/EventMarker";
 import type { EventBuilding, EventFloor, EventTeam } from "@/src/types/event";
@@ -54,7 +54,7 @@ export function EventMap({
       >
         <View style={{ aspectRatio: 16 / 9, minWidth: 760, width: "100%" }}>
           <Image
-            accessibilityLabel="Planta interna da Mostra de Projetos"
+            accessibilityLabel="Planta interna do Sapucaí Rotas - Fetin"
             resizeMode="contain"
             source={mapSource}
             style={{ height: "100%", width: "100%" }}
@@ -70,23 +70,6 @@ export function EventMap({
           ))}
         </View>
       </ScrollView>
-
-      <View
-        pointerEvents="none"
-        style={{
-          backgroundColor: "rgba(7, 4, 31, 0.82)",
-          borderRadius: 10,
-          left: 12,
-          paddingHorizontal: 10,
-          paddingVertical: 7,
-          position: "absolute",
-          top: 12,
-        }}
-      >
-        <Text style={{ color: "#ded6ff", fontSize: 12, fontWeight: "800" }}>
-          Arraste para explorar a planta
-        </Text>
-      </View>
     </View>
   );
 }
